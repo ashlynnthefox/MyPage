@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ashlynn — chat</title>
+<link rel="stylesheet" href="style.css" />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  .rooms{display:grid;grid-template-columns:190px 1fr;gap:0;border:1px solid #d8a7b4;border-radius:8px;overflow:hidden}
+  @media(max-width:640px){.rooms{grid-template-columns:1fr}}
+  .room-list{background:#fdf0f3;border-right:1px solid #d8a7b4;padding:10px;min-height:260px}
+  .room-list button.rm{display:block;width:100%;text-align:left;margin-bottom:6px;font-family:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:10px;border:1px solid #d8a7b4;background:#fff;color:#66172e;cursor:pointer}
+  .room-list button.rm.on{background:linear-gradient(#ff7d9c,#e0315f);color:#fff;border-color:#8f1d3d}
+  .room-list input{width:100%;padding:6px;border-radius:8px;border:1px solid #cf8fa0;font-family:inherit;font-size:12px;margin-bottom:6px}
+  .chat{padding:10px;display:flex;flex-direction:column;min-height:260px}
+  #msgs{flex:1;max-height:300px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+  .msg{background:#f9dee5;border:1px solid #e3aec0;border-radius:10px;padding:6px 10px;font-size:13px}
+  .msg b{font-size:12px}
+  .msg small{display:block;color:#888;font-size:11px}
+  .chat-row{display:flex;gap:6px}
+  .chat-row input{padding:7px;border-radius:8px;border:1px solid #cf8fa0;font-family:inherit;font-size:12px}
+  #chat-nick{width:110px;flex:none}
+  #chat-text{flex:1}
+  .chat-row button{font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:12px;border:1px solid #8f1d3d;background:linear-gradient(#ff7d9c,#e0315f);color:#fff;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>★ ashlynn • van wert, ohio</span>
+  </div>
+</div>
+
+<nav class="mainnav">
+  <div class="wrap">
+    <a href="index.html" class="brand">ashlynn</a>
+    <div class="links" id="nav-links">
+      <a href="index.html">Home</a>
+      <a href="art.html">Art</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html">Blog</a>
+      <a href="notes.html">Notes</a>
+      <a href="chat.html" class="active">Chat</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap layout">
+  <main id="content">
+    <section class="panel">
+      <div class="panel-head"><span>group chats</span></div>
+      <div class="panel-body">
+        <div class="rooms">
+          <div class="room-list">
+            <div id="room-btns"></div>
+            <input id="room-new" maxlength="24" placeholder="new room name…" />
+          </div>
+          <div class="chat">
+            <div id="msgs"></div>
+            <div class="chat-row">
+              <input id="chat-nick" maxlength="16" placeholder="nickname" />
+              <input id="chat-text" maxlength="300" placeholder="message…" />
+              <button id="chat-send">send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside id="sidebar">
+  </aside>
+</div>
+
+<footer>
+  <div class="wrap">© <span id="year">2026</span> ashlynn</div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+// group chat rooms (stored in this browser)
+(function () {
+  const btns = document.getElementById('room-btns');
+  if (!btns) return;
+  const msgs = document.getElementById('msgs');
+  const loadR = () => { try { return JSON.parse(localStorage.getItem('ashlynn-rooms') || '[]'); } catch (e) { return []; } };
+  const saveR = r => { try { localStorage.setItem('ashlynn-rooms', JSON.stringify(r)); } catch (e) {} };
+  let rooms = loadR();
+  if (!rooms.length) {
+    rooms = [{ id: 'lobby', name: 'lobby', msgs: [{ nick: 'ashlynn', text: 'welcome to the lobby. say hi.', ts: Date.now() }] }];
+    saveR(rooms);
+  }
+  let cur = rooms[0].id;
+  const renderRooms = () => {
+    btns.innerHTML = '';
+    rooms.forEach(r => {
+      const b = document.createElement('button');
+      b.className = 'rm' + (r.id === cur ? ' on' : '');
+      b.textContent = '# ' + r.name + ' (' + r.msgs.length + ')';
+      b.onclick = () => { cur = r.id; renderRooms(); renderMsgs(); };
+      b.ondblclick = () => {
+        if (r.id === 'lobby' || !confirm('Delete #' + r.name + '?')) return;
+        rooms = rooms.filter(x => x.id !== r.id);
+        cur = rooms[0].id;
+        saveR(rooms); renderRooms(); renderMsgs();
+      };
+      btns.appendChild(b);
+    });
+  };
+  const renderMsgs = () => {
+    const r = rooms.find(x => x.id === cur);
+    msgs.innerHTML = '';
+    if (!r || !r.msgs.length) { msgs.innerHTML = '<p class="muted"><i>Quiet in here…</i></p>'; return; }
+    r.msgs.forEach(m => {
+      const d = document.createElement('div');
+      d.className = 'msg';
+      const b = document.createElement('b');
+      b.textContent = m.nick;
+      const p = document.createElement('div');
+      p.textContent = m.text;
+      const s = document.createElement('small');
+      s.textContent = new Date(m.ts).toLocaleString();
+      d.append(b, p, s);
+      msgs.appendChild(d);
+    });
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+  document.getElementById('room-new').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const name = e.target.value.trim().toLowerCase().slice(0, 24).replace(/[^a-z0-9-_]/g, '') || 'room';
+    const r = { id: name + '-' + Date.now(), name, msgs: [] };
+    rooms.push(r); cur = r.id;
+    saveR(rooms); renderRooms(); renderMsgs();
+    e.target.value = '';
+  });
+  const send = () => {
+    const nick = (document.getElementById('chat-nick').value.trim().slice(0, 16) || 'anon');
+    const text = document.getElementById('chat-text').value.trim().slice(0, 300);
+    if (!text) return;
+    const r = rooms.find(x => x.id === cur);
+    if (!r) return;
+    r.msgs.push({ nick, text, ts: Date.now() });
+    saveR(rooms); renderRooms(); renderMsgs();
+    document.getElementById('chat-text').value = '';
+    try { localStorage.setItem('ashlynn-nick', nick); } catch (e) {}
+  };
+  document.getElementById('chat-send').onclick = send;
+  document.getElementById('chat-text').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+  try {
+    const n = localStorage.getItem('ashlynn-nick');
+    if (n) document.getElementById('chat-nick').value = n;
+  } catch (e) {}
+  renderRooms(); renderMsgs();
+})();
+</script>
+</body>
+</html>

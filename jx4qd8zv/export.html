@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>export</title>
+<link rel="stylesheet" href="../style.css" />
+<!-- Owner-only. Not linked from anywhere, not indexed. -->
+<style>
+  #gate{max-width:340px;margin:60px auto;text-align:center}
+  #gate input{width:100%;padding:10px;border-radius:10px;border:1px solid #cf8fa0;font-family:inherit}
+  #gate button,.done button{margin-top:10px;font-family:inherit;font-size:13px;font-weight:700;padding:8px 24px;border-radius:16px;border:1px solid #8f1d3d;background:linear-gradient(#ff7d9c,#e0315f);color:#fff;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap"><span>★ export notes</span></div>
+</div>
+
+<div class="wrap layout" style="grid-template-columns:1fr">
+  <main>
+    <section class="panel">
+      <div class="panel-head"><span>export wall as .txt</span></div>
+      <div class="panel-body">
+        <div id="gate">
+          <p class="muted"><i>Owner password required.</i></p>
+          <p><input id="pw" type="password" placeholder="password" /></p>
+          <p><button id="go">unlock</button></p>
+          <p class="muted" id="err"></p>
+        </div>
+        <div id="done" class="done" hidden>
+          <p><b id="count"></b> notes on this device.</p>
+          <p><button id="dl">download notes.txt</button></p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+// Same owner lock. Password itself is not in this file — only its hash.
+const PRESET = {
+  salt: 'k7Qm2XvL9pR4tYwZ',
+  hash: '76f403fc212bd855bd6170a20c1e5915971f7187c623459819325dd7fe214d94'
+};
+const te = new TextEncoder();
+async function shaHex(s) {
+  const d = await crypto.subtle.digest('SHA-256', te.encode(s));
+  return [...new Uint8Array(d)].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+async function unlock() {
+  const pw = document.getElementById('pw').value;
+  const err = document.getElementById('err');
+  if (!pw) return;
+  let ok = false;
+  try {
+    const auth = JSON.parse(localStorage.getItem('ashlynn-auth') || 'null');
+    ok = auth && auth.salt
+      ? (await shaHex(auth.salt + '::' + pw)) === auth.hash
+      : (await shaHex(PRESET.salt + '::' + pw)) === PRESET.hash;
+  } catch (e) {}
+  if (!ok) { err.textContent = 'Wrong password.'; return; }
+  let notes = [];
+  try { notes = JSON.parse(localStorage.getItem('ashlynn-notes-v2') || '[]'); } catch (e) {}
+  document.getElementById('gate').hidden = true;
+  document.getElementById('done').hidden = false;
+  document.getElementById('count').textContent = notes.length;
+  document.getElementById('dl').onclick = () => {
+    const txt = notes.map(n => n.name + ' (' + n.date + '):\n' + n.text).join('\n\n---\n\n') || '(no notes yet)';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([txt], { type: 'text/plain' }));
+    a.download = 'notes.txt';
+    a.click();
+  };
+}
+document.getElementById('go').onclick = unlock;
+document.getElementById('pw').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+</script>
+</body>
+</html>

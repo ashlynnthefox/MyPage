@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ashlynn — notes</title>
+<link rel="stylesheet" href="style.css" />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+  .wall-bar{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+  .wall-bar input{flex:1;min-width:140px;padding:7px;border-radius:8px;border:1px solid #cf8fa0;font-family:inherit;font-size:12px}
+  .wall-bar button{font-family:inherit;font-size:12px;font-weight:700;padding:7px 14px;border-radius:12px;border:1px solid #cf8fa0;background:linear-gradient(#fff,#f6cdd8);color:#57182a;cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>★ ashlynn • van wert, ohio</span>
+  </div>
+</div>
+
+<nav class="mainnav">
+  <div class="wrap">
+    <a href="index.html" class="brand">ashlynn</a>
+    <div class="links" id="nav-links">
+      <a href="index.html">Home</a>
+      <a href="art.html">Art</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html">Blog</a>
+      <a href="notes.html" class="active">Notes</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap layout">
+  <main id="content">
+    <section class="panel">
+      <div class="panel-head"><span>notes wall</span><span class="muted" id="note-count"></span></div>
+      <div class="panel-body">
+        <div class="wall-bar">
+          <input id="note-search" maxlength="60" placeholder="search notes…" />
+        </div>
+        <div id="notes"></div>
+        <p><input id="note-name" maxlength="30" placeholder="your name" /></p>
+        <p><textarea id="note-text" rows="3" maxlength="300" placeholder="write something nice…"></textarea></p>
+        <p><button id="note-post">post note</button></p>
+      </div>
+    </section>
+
+  </main>
+
+  <aside id="sidebar">
+  </aside>
+</div>
+
+<footer>
+  <div class="wrap">© <span id="year">2026</span> ashlynn</div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+// wall search + export + group chats (same local wall as home: 'ashlynn-notes-v2')
+(function () {
+  const q = document.getElementById('note-search');
+  if (q) q.addEventListener('input', () => {
+    const s = q.value.trim().toLowerCase();
+    document.querySelectorAll('#notes .note').forEach(n => {
+      n.style.display = n.textContent.toLowerCase().includes(s) ? '' : 'none';
+    });
+  });
+  // rooms
+  const btns = document.getElementById('room-btns');
+  if (!btns) return;
+  const msgs = document.getElementById('msgs');
+  const loadR = () => { try { return JSON.parse(localStorage.getItem('ashlynn-rooms') || '[]'); } catch (e) { return []; } };
+  const saveR = r => { try { localStorage.setItem('ashlynn-rooms', JSON.stringify(r)); } catch (e) {} };
+  let rooms = loadR();
+  if (!rooms.length) {
+    rooms = [{ id: 'lobby', name: 'lobby', msgs: [{ nick: 'ashlynn', text: 'welcome to the lobby. say hi.', ts: Date.now() }] }];
+    saveR(rooms);
+  }
+  let cur = rooms[0].id;
+  const renderRooms = () => {
+    btns.innerHTML = '';
+    rooms.forEach(r => {
+      const b = document.createElement('button');
+      b.className = 'rm' + (r.id === cur ? ' on' : '');
+      b.textContent = '# ' + r.name + ' (' + r.msgs.length + ')';
+      b.onclick = () => { cur = r.id; renderRooms(); renderMsgs(); };
+      b.ondblclick = () => {
+        if (r.id === 'lobby' || !confirm('Delete #' + r.name + '?')) return;
+        rooms = rooms.filter(x => x.id !== r.id);
+        cur = rooms[0].id;
+        saveR(rooms); renderRooms(); renderMsgs();
+      };
+      btns.appendChild(b);
+    });
+  };
+  const renderMsgs = () => {
+    const r = rooms.find(x => x.id === cur);
+    msgs.innerHTML = '';
+    if (!r || !r.msgs.length) { msgs.innerHTML = '<p class="muted"><i>Quiet in here…</i></p>'; return; }
+    r.msgs.forEach(m => {
+      const d = document.createElement('div');
+      d.className = 'msg';
+      const b = document.createElement('b');
+      b.textContent = m.nick;
+      const p = document.createElement('div');
+      p.textContent = m.text;
+      const s = document.createElement('small');
+      s.textContent = new Date(m.ts).toLocaleString();
+      d.append(b, p, s);
+      msgs.appendChild(d);
+    });
+    msgs.scrollTop = msgs.scrollHeight;
+  };
+  document.getElementById('room-new').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const name = e.target.value.trim().toLowerCase().slice(0, 24).replace(/[^a-z0-9-_]/g, '') || 'room';
+    const r = { id: name + '-' + Date.now(), name, msgs: [] };
+    rooms.push(r); cur = r.id;
+    saveR(rooms); renderRooms(); renderMsgs();
+    e.target.value = '';
+  });
+  const send = () => {
+    const nick = (document.getElementById('chat-nick').value.trim().slice(0, 16) || 'anon');
+    const text = document.getElementById('chat-text').value.trim().slice(0, 300);
+    if (!text) return;
+    const r = rooms.find(x => x.id === cur);
+    if (!r) return;
+    r.msgs.push({ nick, text, ts: Date.now() });
+    saveR(rooms); renderRooms(); renderMsgs();
+    document.getElementById('chat-text').value = '';
+    try { localStorage.setItem('ashlynn-nick', nick); } catch (e) {}
+  };
+  document.getElementById('chat-send').onclick = send;
+  document.getElementById('chat-text').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+  try {
+    const n = localStorage.getItem('ashlynn-nick');
+    if (n) document.getElementById('chat-nick').value = n;
+  } catch (e) {}
+  const cnt = document.getElementById('note-count');
+  const updCount = () => {
+    let notes = [];
+    try { notes = JSON.parse(localStorage.getItem('ashlynn-notes-v2') || '[]'); } catch (e) {}
+    if (cnt) cnt.textContent = notes.length + ' notes';
+  };
+  renderRooms(); renderMsgs(); updCount();
+  setInterval(updCount, 2000);
+})();
+</script>
+</body>
+</html>

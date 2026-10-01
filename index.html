@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ashlynn</title>
+<link rel="stylesheet" href="style.css" />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>★ ashlynn • van wert, ohio <span id="oh-clock" style="opacity:.8"></span></span>
+  </div>
+</div>
+
+<nav class="mainnav">
+  <div class="wrap">
+    <a href="#" class="brand">ashlynn</a>
+    <div class="links" id="nav-links">
+      <a href="index.html" class="active">Home</a>
+      <a href="art.html">Art</a>
+      <a href="projects.html">Projects</a>
+      <a href="blog.html">Blog</a>
+      <a href="notes.html">Notes</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div data-editable>
+      <h1>Hey, I'm Ashlynn.</h1>
+      <p class="lede">im ashlynn. i like to code and make things with photopea. some of my intreresets are</p>
+      <ul class="interests">
+        <li>anything retro</li>
+        <li>ARG's</li>
+        <li>iOS jailbreaking</li>
+        <li>modding</li>
+        <li>codding</li>
+        <li>art</li>
+      </ul>
+    </div>
+    <div class="profile-card">
+      <div class="pc-head">ashlynn <span class="prns">she/her</span></div>
+      <div class="pc-body" data-editable>
+        <img class="avatar-img" src="pfp_main_social.png" alt="sketch by ashlynn" />
+        <p class="nat">age: 18<br/>nationality: canadian + american<br/>discord: <b>_ashlynnthefox</b><br/><a href="https://steamcommunity.com/id/ashlynntf/">steam</a> · <a href="https://www.youtube.com/channel/UCeL9zDZlF8D31jCnp4e8LGA/videos">youtube</a></p>
+        <p>about me goes here.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="fact-ticker"><marquee behavior="scroll" direction="left" scrollamount="4">★ honey never spoils ★ octopuses have three hearts ★ bananas are berries but strawberries aren't ★ wombat poop is cube-shaped ★ sea otters hold hands when they sleep ★ the dot over an i is called a tittle ★ vending machines kill more people than sharks ★ turtles can breathe through their butts ★</marquee></div>
+
+<div class="wrap layout">
+  <main id="content">
+    <section class="panel">
+      <div class="panel-head"><span>leave a note</span></div>
+      <div class="panel-body">
+        <div id="notes"></div>
+        <p><input id="note-name" maxlength="30" placeholder="your name" /></p>
+        <p><textarea id="note-text" rows="3" maxlength="300" placeholder="write something nice…"></textarea></p>
+        <p><button id="note-post">post note</button></p>
+      </div>
+    </section>
+  </main>
+
+  <aside id="sidebar">
+    <div class="panel widget">
+      <div class="panel-head"><span>van wert, ohio</span></div>
+      <div class="panel-body small">
+        <div class="wx-time" id="oh-time">--:--</div>
+        <div><span id="oh-date"></span> · eastern</div>
+        <div id="oh-wx" class="muted"><i>coding sum bs</i></div>
+        <div class="tz">
+          <div>moon tonight: <b id="oh-moon">--</b></div>
+          <div>day <b id="oh-daynum">--</b> of 2026</div>
+          <div>you're on <b id="you-agent">--</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel widget">
+      <div class="panel-head"><span>do not interact</span></div>
+      <div class="panel-body small dni-list">
+        transphobia<br/>racism<br/>bullying<br/>pedophilia<br/>etc.
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="wrap">© <span id="year">2026</span> ashlynn</div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

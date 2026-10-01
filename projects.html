@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ashlynn — projects</title>
+<link rel="stylesheet" href="style.css" />
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="wrap">
+    <span>★ ashlynn • van wert, ohio</span>
+  </div>
+</div>
+
+<nav class="mainnav">
+  <div class="wrap">
+    <a href="index.html" class="brand">ashlynn</a>
+    <div class="links" id="nav-links">
+      <a href="index.html">Home</a>
+      <a href="art.html">Art</a>
+      <a href="projects.html" class="active">Projects</a>
+      <a href="blog.html">Blog</a>
+      <a href="notes.html">Notes</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap layout">
+  <main id="content">
+    <section class="panel">
+      <div class="panel-head"><span>projects</span><a href="https://github.com/ashlynnthefox">github →</a></div>
+      <div class="subtabs">
+        <button id="tab-site" class="subtab on">site projects</button>
+        <button id="tab-gh" class="subtab">github projects</button>
+      </div>
+      <div class="panel-body" id="pane-site" data-editable>
+        <p>No projects (yet)</p>
+      </div>
+      <div class="panel-body" id="pane-gh" hidden>
+        <div id="gh-list">
+          <article class="proj"><h3><a href="https://github.com/ashlynnthefox/EasyLegacyManager">EasyLegacyManager</a></h3><p>A easy server/client manager for Legacy Console Edition</p><p class="tags"><span>★ 0</span></p></article>
+          <article class="proj"><h3><a href="https://github.com/ashlynnthefox/hackintoshryzen">hackintoshryzen</a></h3><p>Hackintosh EFI (Opencore 0.7.2) — RX 580 + Ryzen 7 2700x build.</p><p class="tags"><span>★ 1</span></p></article>
+          <article class="proj"><h3><a href="https://github.com/ashlynnthefox/sidequest-chromeos">sidequest-chromeos</a></h3><p class="tags"><span>★ 1</span></p></article>
+          <article class="proj"><h3><a href="https://github.com/ashlynnthefox/finobeproject.github.io">finobeproject.github.io</a></h3><p class="tags"><span>HTML</span></p></article>
+          <article class="proj"><h3><a href="https://github.com/ashlynnthefox/bot_smp">bot_smp</a></h3><p class="tags"><span>JavaScript</span></p></article>
+          <article class="proj"><h3><a href="https://github.com/ashlynnthefox/proxytest">proxytest</a></h3><p class="tags"><span>JavaScript</span></p></article>
+          <article class="proj"><h3><a href="https://github.com/ashlynnthefox/proxy">proxy</a></h3><p class="tags"><span>JavaScript</span></p></article>
+        </div>
+        <p class="muted"><i>(github is also not up to date)</i></p>
+      </div>
+    </section>
+  </main>
+
+  <aside id="sidebar">
+    <div class="panel widget">
+      <div class="panel-head"><span>now</span></div>
+      <div class="panel-body" data-editable>
+        <p>current working on nothing</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="wrap">© <span id="year">2026</span> ashlynn</div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
